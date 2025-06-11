@@ -1,0 +1,366 @@
+Login page
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import { MessageCircle } from "lucide-react"
+
+export default function LoginPage() {
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
+
+  // Login form state
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [rememberMe, setRememberMe] = useState(false)
+
+  // Form validation errors
+  
+
+  const handleLogin = (e) => {
+    e.preventDefault()
+    setIsLoading(true)
+
+    // Reset errors
+    setErrors({})
+
+    // Validate form
+    const newErrors = {}
+    if (!email) newErrors.email = "Email is required"
+    if (!password) newErrors.password = "Password is required"
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      setIsLoading(false)
+      return
+    }
+
+    // Simulate API call
+    setTimeout(() => {
+      // In a real app, you would authenticate with your backend here
+      console.log("Login attempt with:", { email, password, rememberMe })
+      router.push("/chat")
+      setIsLoading(false)
+    }, 1500)
+  }
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+      <div className="w-full max-w-md">
+        <div className="flex justify-center mb-6">
+          <div className="rounded-full bg-primary p-2">
+            <MessageCircle className="h-8 w-8 text-white" />
+          </div>
+        </div>
+
+        <h1 className="text-center text-2xl font-bold mb-6">Welcome to ChatApp</h1>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Login</CardTitle>
+            <CardDescription>Enter your credentials to access your account</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin}>
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="name@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={errors.email ? "border-red-500" : ""}
+                  />
+                  {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+                </div>
+
+                <div className="grid gap-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Password</Label>
+                    <a href="#" className="text-sm text-primary hover:underline">
+                      Forgot password?
+                    </a>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className={errors.password ? "border-red-500" : ""}
+                  />
+                  {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="remember-me" checked={rememberMe} onCheckedChange={setRememberMe} />
+                  <label
+                    htmlFor="remember-me"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Remember me
+                  </label>
+                </div>
+              </div>
+
+              <Button className="w-full mt-6" type="submit" disabled={isLoading}>
+                {isLoading ? "Logging in..." : "Login"}
+              </Button>
+            </form>
+          </CardContent>
+          <CardFooter className="flex justify-center">
+            <p className="text-sm text-muted-foreground">
+              Don't have an account?
+              <Link href="/signup" className="text-primary hover:underline ml-1">
+                Sign up
+              </Link>
+            </p>
+          </CardFooter>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+
+Sign up page
+
+"use client"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import { MessageCircle } from "lucide-react"
+
+export default function SignupPage() {
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
+
+  // Signup form state
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [agreeTerms, setAgreeTerms] = useState(false)
+
+  // Form validation errors
+  const [errors, setErrors] = useState({})
+
+  const handleSignup = (e) => {
+    e.preventDefault()
+    setIsLoading(true)
+
+    // Reset errors
+    setErrors({})
+
+    // Validate form
+    const newErrors = {}
+    if (!name) newErrors.name = "Name is required"
+    if (!email) newErrors.email = "Email is required"
+    if (!password) newErrors.password = "Password is required"
+    if (password.length < 8) newErrors.password = "Password must be at least 8 characters"
+    if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match"
+    if (!agreeTerms) newErrors.terms = "You must agree to the terms"
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      setIsLoading(false)
+      return
+    }
+
+    // Simulate API call
+    setTimeout(() => {
+      // In a real app, you would register with your backend here
+      console.log("Signup attempt with:", { name, email, password })
+      router.push("/chat")
+      setIsLoading(false)
+    }, 1500)
+  }
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+      <div className="w-full max-w-md">
+        <div className="flex justify-center mb-6">
+          <div className="rounded-full bg-primary p-2">
+            <MessageCircle className="h-8 w-8 text-white" />
+          </div>
+        </div>
+
+        <h1 className="text-center text-2xl font-bold mb-6">Join ChatApp</h1>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Create an account</CardTitle>
+            <CardDescription>Enter your information to create an account</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSignup}>
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="John Doe"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className={errors.name ? "border-red-500" : ""}
+                  />
+                  {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="name@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={errors.email ? "border-red-500" : ""}
+                  />
+                  {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className={errors.password ? "border-red-500" : ""}
+                  />
+                  {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="confirm-password">Confirm Password</Label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className={errors.confirmPassword ? "border-red-500" : ""}
+                  />
+                  {errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword}</p>}
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="terms"
+                    checked={agreeTerms}
+                    onCheckedChange={setAgreeTerms}
+                    className={errors.terms ? "border-red-500" : ""}
+                  />
+                  <label
+                    htmlFor="terms"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    I agree to the
+                    <a href="#" className="text-primary hover:underline ml-1">
+                      terms of service
+                    </a>
+                  </label>
+                </div>
+                {errors.terms && <p className="text-sm text-red-500">{errors.terms}</p>}
+              </div>
+
+              <Button className="w-full mt-6" type="submit" disabled={isLoading}>
+                {isLoading ? "Creating account..." : "Create account"}
+              </Button>
+            </form>
+          </CardContent>
+          <CardFooter className="flex justify-center">
+            <p className="text-sm text-muted-foreground">
+              Already have an account?
+              <Link href="/login" className="text-primary hover:underline ml-1">
+                Login
+              </Link>
+            </p>
+          </CardFooter>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+
+// Profile setup page1
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+import { UploadCloud } from "lucide-react";
+
+export default function ProfileForm() {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-xl border-none bg-gradient-to-br from-gray-800 to-gray-900 text-white rounded-3xl">
+        <CardContent className="p-8 space-y-6">
+          <h2 className="text-2xl font-bold text-center">Create Your Profile</h2>
+          <p className="text-center text-sm text-gray-400">Personalize your chat experience</p>
+
+          <div className="flex justify-center">
+            <div className="relative w-24 h-24 rounded-full border-2 border-dashed border-gray-600 flex items-center justify-center cursor-pointer hover:border-white transition duration-300">
+              <UploadCloud className="w-6 h-6 text-gray-400" />
+              <input type="file" className="absolute w-full h-full opacity-0 cursor-pointer" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="firstName">First Name</Label>
+              <Input id="firstName" placeholder="John" className="mt-1 bg-gray-700 border-none" />
+            </div>
+            <div>
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input id="lastName" placeholder="Doe" className="mt-1 bg-gray-700 border-none" />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" placeholder="john.doe@example.com" disabled className="mt-1 bg-gray-700 border-none text-gray-400" />
+          </div>
+
+          <div>
+            <Label>Color Theme</Label>
+            <p className="text-xs text-gray-400 mb-2">Choose a color theme for your chat experience</p>
+            <div className="flex space-x-3">
+              {['blue', 'purple', 'green', 'red', 'orange'].map((color) => (
+                <button
+                  key={color}
+                  className={cn(
+                    `w-8 h-8 rounded-full border-2 border-transparent transition-transform transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white`,
+                    color === 'blue' && 'bg-blue-500',
+                    color === 'purple' && 'bg-purple-500',
+                    color === 'green' && 'bg-green-500',
+                    color === 'red' && 'bg-red-500',
+                    color === 'orange' && 'bg-orange-500'
+                  )}
+                ></button>
+              ))}
+            </div>
+          </div>
+
+          <Button className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-md py-2 rounded-xl shadow-md">Create Profile</Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+

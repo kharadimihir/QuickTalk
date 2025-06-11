@@ -1,35 +1,100 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+/* eslint-disable no-unused-vars */
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import SignUp from "./pages/auth/register";
+import Chat from "./pages/chat/chat";
+import Profile from "./pages/profile/profile";
+import { useStore } from "@/store";
+import { useState } from "react";
+import { useEffect } from "react";
+import { apiClient } from "./lib/api-client";
+import { GET_USER_INFO } from "./utils/constants";
+import Login from "./pages/auth/login";
+
+const PrivateRoute = ({ children }) => {
+  const { userInfo, setUserInfo } = useStore();
+  const isAuthenticated = !!userInfo;
+  return isAuthenticated ? children : <Navigate to="/sign-up" />;
+};
+
+const AuthRoute = ({ children }) => {
+  const { userInfo } = useStore();
+  const isAuthenticated = !!userInfo;
+  return isAuthenticated ? <Navigate to="/chat" /> : children;
+};
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { userInfo, setUserInfo } = useStore();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const response = await apiClient.get(GET_USER_INFO, {
+          withCredentials: true,
+        });
+        if (response.status == 200 && response.data.id) {
+          setUserInfo(response.data);
+        } else {
+          setUserInfo(undefined);
+        }
+      } catch (error) {
+        console.log(error);
+        setUserInfo(undefined);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if (!userInfo) {
+      getUserData();
+    } else {
+      setIsLoading(false);
+    }
+  }, [userInfo, setUserInfo]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/sign-in"
+          element={
+            <AuthRoute>
+              <Login />
+            </AuthRoute>
+          }
+        />
+        <Route
+          path="/sign-up"
+          element={
+            <AuthRoute>
+              <SignUp />
+            </AuthRoute>
+          }
+        />
+        <Route
+          path="/chat"
+          element={
+            <PrivateRoute>
+              <Chat />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <Profile />
+            </PrivateRoute>
+          }
+        />
+
+        <Route path="*" element={<Navigate to="/sign-up" />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
