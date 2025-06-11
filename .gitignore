@@ -2,3 +2,5 @@
 Notes.txt
 .env
 client/src/.env
+.env
+*.env
